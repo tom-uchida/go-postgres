@@ -1,0 +1,13 @@
+output   = "go-postgres/db/models"
+wipe     = true
+no-tests = true
+add-enum-types = true
+
+[psql]
+  dbname = "dbname"
+  host   = "localhost"
+  port   = 5432
+  user   = "dbusername"
+  pass   = "dbpassword"
+  schema = "myschema"
+  blacklist = ["migrations", "other"]
