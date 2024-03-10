@@ -4,10 +4,10 @@ no-tests = true
 add-enum-types = true
 
 [psql]
-  dbname = "dbname"
+  dbname = "app"
   host   = "localhost"
+  user   = "postgres"
+  pass   = "postgres"
   port   = 5432
-  user   = "dbusername"
-  pass   = "dbpassword"
-  schema = "myschema"
-  blacklist = ["migrations", "other"]
+  sslmode = "disable"
+  whitelist = ["authors", "publishers", "users", "books", "loans"]

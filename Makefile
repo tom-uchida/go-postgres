@@ -2,23 +2,47 @@ include .env
 
 up:
 	docker compose up -d
-	docker ps
+	docker ps -a
 
 down:
 	docker compose down
-	docker ps
+	docker ps -a
 
-hash:
-	atlas migrate hash --dir "file://db/migrations" 
+atlas-hash:
+	atlas migrate hash \
+	--dir "file://db/sql"
 
-migrate:
-	atlas migrate apply \
-  	--url "postgres://${DB_USER}:${DB_PASS}@0.0.0.0:5432/${DB_NAME}?search_path=public&sslmode=disable" \
-  	--dir file://db/migrations \
-  	--dry-run
+# スキーマの適用
+atlas-schema-init:
+	atlas schema apply \
+	--url "postgres://${DB_USER}:${DB_PASS}@localhost:5432/${DB_NAME}?search_path=public&sslmode=disable" \
+	--dev-url "docker://postgres/15/dev?search_path=public" \
+	--file file://db/sql/schema.sql
 
-boiler:
-	sqlboiler psql
+# マイグレーションファイルの生成
+atlas-migrate-diff:
+	atlas migrate diff initial \
+	--dir file://db/migrations \
+	--to file://db/sql/schema.sql \
+	--dev-url "docker://postgres/15/dev?search_path=public" \
+	--format '{{ sql . "  " }}'
+
+# # マイグレーションの実行
+# atlas-migrate-apply:
+# 	atlas migrate apply \
+# 	--dir file://db/migrations \
+#   	--url "postgres://${DB_USER}:${DB_PASS}@localhost:5432/${DB_NAME}?search_path=public&sslmode=disable" \
+#   	--dry-run
+
+atlas-schema-clean:
+	atlas schema clean \
+	--url "postgres://${DB_USER}:${DB_PASS}@localhost:5432/${DB_NAME}?search_path=public&sslmode=disable"
+
+sqlboiler:
+	sqlboiler psql -c ./sqlboiler.toml -o ./db/models --no-tests
 
 gui:
 	open http://localhost:8081/
+
+run:
+	go run ./
