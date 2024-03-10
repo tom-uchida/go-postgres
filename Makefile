@@ -41,7 +41,7 @@ atlas-schema-clean:
 sqlboiler:
 	sqlboiler psql -c ./sqlboiler.toml -o ./db/models --no-tests
 
-gui:
+pgweb:
 	open http://localhost:8081/
 
 run:
